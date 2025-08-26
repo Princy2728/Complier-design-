@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function to eliminate left recursion
+void eliminateLeftRecursion(char nonTerminal, char alpha[10][10], int alphaCount,
+                            char beta[10][10], int betaCount) {
+    int i;
+
+    // Print productions without left recursion
+    for (i = 0; i < betaCount; i++) {
+        printf("%c -> %s%c'\n", nonTerminal, beta[i], nonTerminal);
+    }
+
+    // Print new productions for alpha
+    for (i = 0; i < alphaCount; i++) {
+        printf("%c' -> %s%c'\n", nonTerminal, alpha[i], nonTerminal);
+    }
+
+    // Add epsilon production
+    printf("%c' -> ε\n", nonTerminal);
+}
+
+int main() {
+    char nonTerminal;
+    char production[20], alpha[10][10], beta[10][10];
+    int i, j = 0, k = 0, alphaCount = 0, betaCount = 0, num;
+
+    printf("Enter number of productions: ");
+    scanf("%d", &num);
+
+    for (i = 0; i < num; i++) {
+        printf("Enter production %d (e.g., A->Aa|b): ", i + 1);
+        scanf("%s", production);
+
+        nonTerminal = production[0]; // left-hand side
+
+        char *rhs = strchr(production, '>'); // find "->"
+        rhs++; // move past '>'
+
+        char *token = strtok(rhs, "|");
+        while (token != NULL) {
+            if (token[0] == nonTerminal) {
+                strcpy(alpha[alphaCount++], token + 1); // store alpha (after A)
+            } else {
+                strcpy(beta[betaCount++], token); // store beta
+            }
+            token = strtok(NULL, "|");
+        }
+    }
+
+    // Eliminate left recursion
+    eliminateLeftRecursion(nonTerminal, alpha, alphaCount, beta, betaCount);
+
+    return 0;
+}
