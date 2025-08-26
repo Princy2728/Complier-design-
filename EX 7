@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function to eliminate left factoring
+void eliminateLeftFactoring(char nonTerminal, char productions[10][10], int n) {
+    int i, j, k;
+    char common[10];
+    int commonLen = 0;
+
+    // Step 1: Find common prefix of first two productions
+    for (i = 0; productions[0][i] && productions[1][i]; i++) {
+        if (productions[0][i] == productions[1][i]) {
+            common[commonLen++] = productions[0][i];
+        } else break;
+    }
+    common[commonLen] = '\0';
+
+    if (commonLen == 0) {
+        // No left factoring
+        for (i = 0; i < n; i++) {
+            printf("%c -> %s\n", nonTerminal, productions[i]);
+        }
+        return;
+    }
+
+    // Step 2: Print factored production
+    printf("%c -> %s%c'\n", nonTerminal, common, nonTerminal);
+
+    // Step 3: Print new productions
+    printf("%c' -> ", nonTerminal);
+    for (i = 0; i < n; i++) {
+        if (strlen(productions[i]) == commonLen) {
+            printf("ε");
+        } else {
+            for (j = commonLen; j < strlen(productions[i]); j++) {
+                printf("%c", productions[i][j]);
+            }
+        }
+        if (i != n - 1) printf(" | ");
+    }
+    printf("\n");
+}
+
+int main() {
+    char nonTerminal;
+    int n, i;
+    char productions[10][10];
+
+    printf("Enter non-terminal (e.g., A): ");
+    scanf(" %c", &nonTerminal);
+
+    printf("Enter number of productions: ");
+    scanf("%d", &n);
+
+    printf("Enter productions (right-hand side only):\n");
+    for (i = 0; i < n; i++) {
+        scanf("%s", productions[i]);
+    }
+
+    // Eliminate left factoring
+    eliminateLeftFactoring(nonTerminal, productions, n);
+
+    return 0;
+}
